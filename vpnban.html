@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <title>确认封禁 VPN 用户 - 网络运维工具</title>
+  <style>
+    :root {
+      --primary: #1976d2;
+      --danger: #d32f2f;
+      --bg: #f8f9fa;
+      --text: #212529;
+      --border: #ced4da;
+    }
+    body {
+      margin: 0;
+      padding: 14px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      font-size: 12px;
+      box-sizing: border-box;
+    }
+    .title {
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: var(--danger);
+    }
+    #userInfo {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 8px;
+      white-space: pre-wrap;
+      word-break: break-all;
+      line-height: 1.6;
+      margin-bottom: 10px;
+    }
+    .warn {
+      background: #fff3e0;
+      border: 1px solid #ffcc80;
+      border-radius: 4px;
+      padding: 6px 8px;
+      margin-bottom: 10px;
+      color: #e65100;
+      line-height: 1.5;
+    }
+    .btn-row { display: flex; gap: 8px; margin-top: 12px; }
+    .btn {
+      flex: 1;
+      padding: 8px 0;
+      font-size: 13px;
+      font-weight: 700;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      color: #fff;
+    }
+    .btn:disabled { background: #bbb !important; cursor: not-allowed; }
+    #confirmBtn { background: var(--danger); }
+    #cancelBtn { background: #9e9e9e; }
+    #closeBtn { background: var(--primary); display: none; }
+    #msg {
+      margin-top: 10px;
+      font-size: 12px;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+  </style>
+</head>
+<body>
+  <div class="title">🚫 确认封禁 VPN 用户</div>
+  <div id="userInfo">正在加载用户信息…</div>
+  <div class="warn">禁用后该用户将无法再登录 VPN，当前在线会话会被立即断开；恢复需在 VPN 控制台手动重新启用该用户。</div>
+
+  <div class="btn-row">
+    <button id="confirmBtn" class="btn">确认封禁</button>
+    <button id="cancelBtn" class="btn">取消</button>
+    <button id="closeBtn" class="btn">关闭窗口</button>
+  </div>
+
+  <div id="msg"></div>
+
+  <script src="vpn-api.js"></script>
+  <script src="vpnban.js"></script>
+</body>
+</html>

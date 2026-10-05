@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <title>新建 VPN 用户 - 网络运维工具</title>
+  <style>
+    :root {
+      --primary: #1976d2;
+      --bg: #f8f9fa;
+      --text: #212529;
+      --border: #ced4da;
+    }
+    body {
+      margin: 0;
+      padding: 14px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      font-size: 12px;
+      box-sizing: border-box;
+    }
+    .title {
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .field-label {
+      display: block;
+      font-size: 11px;
+      color: #555;
+      margin: 6px 0 2px;
+    }
+    .input-field {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 6px;
+      font-size: 12px;
+      border: 1px solid var(--border);
+      border-radius: 3px;
+    }
+    .btn-row { display: flex; gap: 8px; margin-top: 12px; }
+    .btn {
+      flex: 1;
+      padding: 8px 0;
+      font-size: 13px;
+      font-weight: 700;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      color: #fff;
+    }
+    .btn:disabled { background: #bbb !important; cursor: not-allowed; }
+    #confirmBtn { background: var(--primary); }
+    #confirmBtn.confirming { background: #d32f2f; }
+    #confirmBtn:hover:not(:disabled), #closeBtn:hover:not(:disabled) { background: #1565c0; }
+    #cancelBtn { background: #9e9e9e; }
+    #closeBtn { background: var(--primary); display: none; }
+    #msg {
+      margin-top: 10px;
+      font-size: 12px;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+  </style>
+</head>
+<body>
+  <div class="title">新建 VPN 用户</div>
+
+  <label class="field-label">用户名（必填）:</label>
+  <input type="text" id="auName" class="input-field" placeholder="最长48字节，不能以英文逗号开头" />
+  <label class="field-label">所属用户组:</label>
+  <select id="auGroup" class="input-field"></select>
+  <label class="field-label">密码（必填）:</label>
+  <input type="text" id="auPasswd" class="input-field" placeholder="不能为中文，最长48字节" autocomplete="off" />
+  <label class="field-label">过期日期（必填）:</label>
+  <input type="date" id="auExTime" class="input-field" />
+  <label class="field-label">手机号（可选）:</label>
+  <input type="text" id="auPhone" class="input-field" placeholder="最长30字节" />
+  <label class="field-label">描述（可选）:</label>
+  <input type="text" id="auNote" class="input-field" placeholder="48字节" />
+
+  <div class="btn-row">
+    <button id="confirmBtn" class="btn">确认新建</button>
+    <button id="cancelBtn" class="btn">取消</button>
+    <button id="closeBtn" class="btn">关闭窗口</button>
+  </div>
+
+  <div id="msg"></div>
+
+  <script src="vpn-api.js"></script>
+  <script src="vpnadduser.js"></script>
+</body>
+</html>

@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <style>
+    :root {
+      --primary: #1976d2;
+      --danger: #d32f2f;
+      --success: #2e7d32;
+      --bg: #f8f9fa;
+      --text: #212529;
+      --border: #ced4da;
+    }
+    body {
+      width: 300px;
+      margin: 0;
+      padding: 12px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      box-sizing: border-box;
+      background: var(--bg);
+      color: var(--text);
+    }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .title {
+      font-size: 13px;
+      font-weight: 700;
+    }
+    .settings-btn {
+      background: none;
+      border: none;
+      font-size: 14px;
+      cursor: pointer;
+      color: #666;
+      padding: 2px 4px;
+    }
+    .settings-btn:hover {
+      color: var(--primary);
+    }
+    #settingsPanel {
+      display: none;
+      background: #fff;
+      padding: 8px;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      margin-bottom: 10px;
+    }
+    .field-label {
+      font-size: 11px;
+      color: #666;
+      margin-top: 4px;
+      display: block;
+    }
+    .input-field {
+      width: 100%;
+      padding: 5px 6px;
+      font-size: 11px;
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      box-sizing: border-box;
+      outline: none;
+      margin-bottom: 4px;
+    }
+    textarea {
+      width: 100%;
+      height: 60px;
+      padding: 6px;
+      font-size: 12px;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      box-sizing: border-box;
+      resize: none;
+      outline: none;
+      background: #fff;
+    }
+    textarea:focus, .input-field:focus {
+      border-color: var(--primary);
+    }
+    .btn-group {
+      display: flex;
+      gap: 6px;
+      margin-top: 8px;
+    }
+    .action-btn {
+      flex: 1;
+      padding: 7px 0;
+      font-size: 12px;
+      font-weight: 600;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      color: #fff;
+      transition: background 0.2s;
+    }
+    .action-btn:disabled {
+      background: #bbb !important;
+      cursor: not-allowed;
+    }
+    #blockBtn { background: var(--danger); }
+    #blockBtn:hover:not(:disabled) { background: #b71c1c; }
+    #unblockBtn { background: var(--success); }
+    #unblockBtn:hover:not(:disabled) { background: #1b5e20; }
+    #saveSettingsBtn {
+      width: 100%;
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 4px 0;
+      border-radius: 3px;
+      font-size: 11px;
+      cursor: pointer;
+      margin-top: 4px;
+    }
+    #statusBox {
+      margin-top: 8px;
+      font-size: 11px;
+      line-height: 1.4;
+      word-break: break-all;
+      min-height: 16px;
+      padding: 4px 6px;
+      border-radius: 3px;
+      display: none;
+      white-space: pre-wrap;
+      max-height: 220px;
+      overflow-y: auto;
+    }
+    .settings-divider {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--primary);
+      border-top: 1px solid var(--border);
+      margin: 8px 0 2px;
+      padding-top: 6px;
+    }
+    .section-title {
+      font-size: 12px;
+      font-weight: 700;
+      margin: 10px 0 4px;
+      color: var(--text);
+    }
+    .query-row {
+      display: flex;
+      gap: 6px;
+    }
+    .query-row .input-field {
+      flex: 1;
+      margin-bottom: 0;
+    }
+    /* 蓝色主按钮：SAM/VPN 查询及后续新增的默认按钮统一用此类 */
+    .primary-btn {
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      border-radius: 3px;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 0 12px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .primary-btn:disabled {
+      background: #bbb;
+      cursor: not-allowed;
+    }
+    .primary-btn:hover:not(:disabled) { background: #1565c0; }
+    /* "更多"下拉菜单 */
+    .dropdown-wrap { position: relative; display: flex; }
+    .dropdown-wrap .primary-btn { height: 100%; }
+    .dropdown-menu {
+      position: absolute;
+      right: 0;
+      top: calc(100% + 4px);
+      z-index: 50;
+      background: #fff;
+      border: 1px solid #ccc;
+      border-radius: 3px;
+      box-shadow: 0 2px 8px rgba(0,0,0,.15);
+      min-width: 120px;
+    }
+    .dropdown-item {
+      padding: 7px 12px;
+      font-size: 11px;
+      cursor: pointer;
+      white-space: nowrap;
+      color: #333;
+    }
+    .dropdown-item:hover { background: #e3f2fd; }
+    #userResultBox {
+      margin-top: 6px;
+      font-size: 11px;
+      line-height: 1.5;
+      padding: 6px;
+      border-radius: 3px;
+      display: none;
+      white-space: pre-wrap;
+      word-break: break-all;
+      max-height: 220px;
+      overflow-y: auto;
+      background: #e8f0fe;
+      color: #0d47a1;
+    }
+    #userResultBox.error {
+      background: #ffebee;
+      color: #b71c1c;
+    }
+    #vpnUserResultBox {
+      margin-top: 6px;
+      font-size: 11px;
+      line-height: 1.5;
+      padding: 6px;
+      border-radius: 3px;
+      display: none;
+      white-space: pre-wrap;
+      word-break: break-all;
+      background: #e8f5e9;
+    }
+    #vpnUserResultBox.error {
+      background: #ffebee;
+      color: #b71c1c;
+    }
+    .diag-btn {
+      background: none;
+      border: none;
+      color: #888;
+      font-size: 10px;
+      cursor: pointer;
+      padding: 2px 0;
+      text-decoration: underline;
+    }
+    .diag-btn:hover { color: var(--primary); }
+    #diagBox {
+      display: none;
+      width: 100%;
+      height: 160px;
+      margin-top: 4px;
+      font-size: 10px;
+      font-family: Consolas, monospace;
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      box-sizing: border-box;
+      resize: vertical;
+      white-space: pre;
+      background: #fff;
+      color: #333;
+    }
+    /* 封禁按钮：红色呼吸闪动 */
+    @keyframes banBlink {
+      0%, 100% { background: #d32f2f; box-shadow: 0 0 0 rgba(211,47,47,0); }
+      50% { background: #ff5252; box-shadow: 0 0 8px rgba(211,47,47,.75); }
+    }
+    .ban-btn {
+      animation: banBlink 1.4s ease-in-out infinite;
+      color: #fff;
+      border: none;
+      border-radius: 3px;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 12px;
+      cursor: pointer;
+      margin-top: 4px;
+    }
+    .ban-btn:disabled { animation: none; background: #bbb; cursor: not-allowed; }
+    .user-record {
+      border-top: 1px dashed #90caf9;
+      margin-top: 6px;
+      padding-top: 4px;
+    }
+    .user-record:first-child { border-top: none; margin-top: 0; padding-top: 0; }
+    .user-info { white-space: pre-wrap; word-break: break-all; }
+    /* 黑名单列表区 */
+    #banListBox {
+      display: none;
+      margin-top: 6px;
+      max-height: 240px;
+      overflow-y: auto;
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      background: #fff;
+      font-size: 11px;
+    }
+    .ban-row {
+      padding: 5px 6px;
+      border-bottom: 1px solid #eee;
+      line-height: 1.5;
+    }
+    .ban-row:last-child { border-bottom: none; }
+    .ban-row .expired { color: #9e9e9e; }
+    .ban-row .unban-btn {
+      background: var(--success);
+      color: #fff;
+      border: none;
+      border-radius: 3px;
+      font-size: 10px;
+      padding: 2px 8px;
+      cursor: pointer;
+      margin-left: 6px;
+    }
+    .ban-row .unban-btn.confirming { background: var(--danger); font-weight: 700; }
+    .ban-row .unban-btn:disabled { background: #bbb; cursor: not-allowed; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <span class="title">DNS 策略控制</span>
+    <button id="toggleSettings" class="settings-btn" title="配置 API 与 Token">⚙ 设置</button>
+  </div>
+
+  <div id="settingsPanel">
+    <label class="field-label">API 接口地址:</label>
+    <input type="text" id="cfgApiUrl" class="input-field" placeholder="http://192.0.2.1:8080/api" />
+    <label class="field-label">鉴权 Token:</label>
+    <input type="password" id="cfgApiToken" class="input-field" placeholder="输入访问密钥" />
+    <div class="settings-divider">SAM 在线用户查询（portal/SAM 第三方接口）</div>
+    <label class="field-label">SAM 接口地址:</label>
+    <input type="text" id="cfgSamUrl" class="input-field" placeholder="http://SAM服务器IP:8080/sam/services/samapi" />
+    <label class="field-label">SAM2 接口地址（第二台 SAM，可空）:</label>
+    <input type="text" id="cfgSamUrl2" class="input-field" placeholder="http://新增SAM_IP:8080/sam/services/samapi" />
+    <label class="field-label">SAM 用户名:</label>
+    <input type="text" id="cfgSamUser" class="input-field" placeholder="SAM 管理员用户名" autocomplete="username" />
+    <label class="field-label">SAM 密码:</label>
+    <input type="password" id="cfgSamPass" class="input-field" placeholder="SAM 管理员密码" autocomplete="current-password" />
+    <div class="settings-divider">VPN 在线用户查询（深信服 SSLVPN OPENAPI）</div>
+    <label class="field-label">VPN 控制器地址:</label>
+    <input type="text" id="cfgVpnBase" class="input-field" placeholder="https://vpn.example.com:4430" />
+    <label class="field-label">API 密钥 Skey:</label>
+    <input type="password" id="cfgVpnSkey" class="input-field" placeholder="VPN 控制台获取的 API 密钥" autocomplete="off" />
+    <label class="field-label">用户组全路径（每行一个）:</label>
+    <textarea id="cfgVpnGroups" class="input-field" rows="3" placeholder="/默认用户组"></textarea>
+    <button id="saveSettingsBtn">保存配置</button>
+  </div>
+
+  <textarea id="domainInput" placeholder="每行一个域名，支持批量粘贴&#10;支持 *.domain.com 与告警脱敏文本"></textarea>
+
+  <div class="btn-group">
+    <button id="blockBtn" class="action-btn">🚫 封禁域名</button>
+    <button id="unblockBtn" class="action-btn">✅ 解封域名</button>
+  </div>
+
+  <div id="statusBox"></div>
+
+  <div class="section-title">🔍 在线用户查询</div>
+  <div class="query-row">
+    <input type="text" id="ipInput" class="input-field" placeholder="输入用户 IPv4/IPv6 地址" />
+    <button id="queryUserBtn" class="primary-btn">查询</button>
+    <div class="dropdown-wrap">
+      <button id="samMoreBtn" class="primary-btn">更多 ▾</button>
+      <div id="samMoreMenu" class="dropdown-menu" style="display:none;">
+        <div class="dropdown-item" id="samMenuBanList">已封禁名单</div>
+      </div>
+    </div>
+  </div>
+  <div id="userResultBox"></div>
+  <div>
+    <button id="diagToggleBtn" class="diag-btn" style="display:none;">🛠 诊断信息（点开展示请求/响应报文）</button>
+  </div>
+  <textarea id="diagBox" readonly placeholder="诊断信息将显示在这里"></textarea>
+
+  <div id="banListBox"></div>
+
+  <div class="section-title">🔍 VPN 在线用户查询</div>
+  <div class="query-row">
+    <input type="text" id="vpnIpInput" class="input-field" placeholder="输入 VPN 用户 IP 地址" />
+    <button id="queryVpnUserBtn" class="primary-btn">查询</button>
+    <div class="dropdown-wrap">
+      <button id="vpnMoreBtn" class="primary-btn">更多 ▾</button>
+      <div id="vpnMoreMenu" class="dropdown-menu" style="display:none;">
+        <div class="dropdown-item" id="vpnMenuListAll">在线用户查询</div>
+        <div class="dropdown-item" id="vpnMenuAddUser">新建用户</div>
+        <div class="dropdown-item" id="vpnMenuRenew">用户续期</div>
+      </div>
+    </div>
+  </div>
+  <div id="vpnUserResultBox"></div>
+
+  <script src="sam-api.js"></script>
+  <script src="vpn-api.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>
