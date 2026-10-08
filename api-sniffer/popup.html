@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <title>API 入口嗅探器</title>
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+  <header>
+    <h1>API 入口嗅探器</h1>
+    <p class="sub" id="tabInfo">正在读取当前标签页…</p>
+  </header>
+
+  <main>
+    <div class="toolbar">
+      <button id="btnRecord" class="primary">⏸ 暂停抓取</button>
+      <button id="btnReload" title="刷新页面并从头抓取">↻ 刷新重抓</button>
+      <button id="btnClear" class="ghost">清空</button>
+    </div>
+
+    <div class="toolbar">
+      <input id="filter" type="text" placeholder="过滤：方法 / 路径关键字" />
+      <label class="check"><input id="apiOnly" type="checkbox" checked /> 只看 API</label>
+    </div>
+
+    <div class="toolbar">
+      <button id="btnScan">🔍 扫描 JS 找接口</button>
+      <button id="btnProbe">📄 探测 OpenAPI 文档</button>
+    </div>
+    <div id="probeResult" class="probe"></div>
+
+    <div id="list" class="list"></div>
+
+    <div id="detail" class="detail" style="display:none">
+      <div class="detail-head">
+        <span id="detailTitle"></span>
+        <button id="detailClose" class="ghost">✕</button>
+      </div>
+      <div class="detail-meta" id="detailMeta"></div>
+      <div class="detail-actions">
+        <button id="btnCurl">复制 cURL</button>
+        <button id="btnCopyUrl">复制 URL</button>
+      </div>
+      <div class="sect">请求参数（query / body 样本）</div>
+      <pre id="detailReq" class="code"></pre>
+      <div class="sect">响应示例</div>
+      <pre id="detailResp" class="code"></pre>
+    </div>
+
+    <div id="staticBox" class="static" style="display:none">
+      <div class="sect">JS 静态扫描到的疑似接口路径（✓ = 已在流量中观察到）</div>
+      <div id="staticList"></div>
+    </div>
+
+    <div class="toolbar bottom">
+      <button id="btnExportJson">导出 JSON</button>
+      <button id="btnExportMd">导出 Markdown</button>
+    </div>
+
+    <p class="hint">
+      用法：打开目标网站随意操作，本插件会自动记录所有 XHR / fetch 调用。
+      页面加载时发出的请求需要点「↻ 刷新重抓」。响应体只保留前 4KB 样本。
+    </p>
+  </main>
+
+  <script src="lib.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>
